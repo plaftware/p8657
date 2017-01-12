@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_datos_usuario"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context=".ui.activity.MainActivity">
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="0dp"
+        android:text="EnigmaVPN"
+        android:textColor="#000000"
+        android:textSize="15dp"
+        android:gravity="right"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:id="@+id/consumoTextView"
+        android:text="10 Gbps"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="0dp"
+        android:layout_alignParentBottom="true"
+        android:textColor="#000000"
+        android:textSize="15dp"
+        android:gravity="center"
+        android:textStyle="bold"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginBottom="0dp"
+        android:text="Phreaker"
+        android:textColor="#000000"
+        android:textSize="15dp"
+        android:gravity="right"/>
+
+    <LinearLayout
+        android:id="@+id/inputContent"
+        android:layout_marginTop="15dp"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/imgCognito"
+        android:layout_alignParentRight="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:text="Serial Client:"
+            android:textSize="18dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="0dp"
+            android:layout_gravity="center"
+            android:textColor="@android:color/holo_blue_dark"
+            android:id="@+id/textView" />
+
+        <TextView
+            android:text="TextView"
+            android:layout_marginTop="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="3dp"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
+            android:id="@+id/idTextView"
+            android:background="#9ab"
+            android:shadowDx="0"
+            android:shadowDy="0"
+            android:shadowRadius="5"
+            android:shadowColor="#222"
+            android:gravity="center"
+            android:textColor="@android:color/background_dark" />
+
+        <TextView
+            android:layout_gravity="center"
+            android:text="Network Release:"
+            android:textSize="18dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:textColor="@android:color/holo_blue_dark"
+            android:id="@+id/textView2" />
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:paddingTop="5dp"
+            android:paddingLeft="3dp"
+            android:paddingBottom="5dp"
+            android:inputType="text"
+            android:ems="10"
+            android:id="@+id/networkReleaseText"
+            android:textSize="12sp"
+            android:background="#9ab"
+            android:hint="network release"
+            android:textAlignment="center"
+            android:gravity="center"
+            android:textColor="@android:color/black" />
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/layout_c"
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/inputContent">
+        <TextView
+            android:layout_width="20dp"
+            android:layout_height="wrap_content"
+            android:text="C"
+            android:fontFamily="serif-monospace"
+            android:textStyle="bold" />
+
+        <Switch
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/switchC" />
+
+    </LinearLayout>
+
+
+    <ImageButton
+        android:id="@+id/imgCognito"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:clickable="true"
+        android:src="@drawable/cognito"
+        android:scaleType="centerCrop"
+        android:background="#00000000"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true" />
+
+    <LinearLayout
+        android:id="@+id/layout_m"
+        android:orientation="horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/layout_c"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:paddingTop="20dp">
+        <TextView
+            android:layout_width="20dp"
+            android:layout_height="wrap_content"
+            android:text="M"
+            android:fontFamily="serif-monospace"
+            android:textStyle="bold"/>
+
+        <Switch
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/switchM" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/layout_c"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Speed"
+            android:fontFamily="serif-monospace"
+            android:textStyle="bold"
+            android:paddingRight="5dp"/>
+
+        <Switch
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/switchCompress" />
+    </LinearLayout>
+
+    <ImageView
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        app:srcCompat="@drawable/conection_consume"
+        android:id="@+id/imgConsumo"
+        android:layout_alignTop="@+id/consumoTextView"
+        android:layout_toLeftOf="@+id/consumoTextView"
+        android:layout_toStartOf="@+id/consumoTextView" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:scaleType="centerCrop"
+        app:fabSize="normal"
+        app:srcCompat="@drawable/disconnected"
+        android:id="@+id/btnStart"
+        android:background="@android:color/holo_blue_dark"
+        android:layout_above="@+id/consumoTextView"
+        android:layout_toRightOf="@+id/imgConsumo"
+        android:layout_toEndOf="@+id/imgConsumo"
+        android:layout_marginBottom="16dp" />
+
+</RelativeLayout>
