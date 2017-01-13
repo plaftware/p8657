@@ -20,7 +20,7 @@ android {
         buildConfigField("String", "PASSW", "\"@@mcjorsh@@VPN\"")
         buildConfigField("String", "DEFAULT_PORT", "\"80\"")
 
-        buildConfigField("Boolean", "TEST_MODE", "true")
+        buildConfigField("Boolean", "TEST_MODE", "false")
         buildConfigField("String", "TEST_USER", "\"m1859259934\"")
         buildConfigField("String", "TEST_PASSW", "\"@@mcjorsh@@VPN\"")
         buildConfigField("String", "TEST_NETWORK", "\"cb3a211733208b87a25030d21789ffee\"")

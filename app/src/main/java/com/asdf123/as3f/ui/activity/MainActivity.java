@@ -298,6 +298,14 @@ public class MainActivity extends AbstractActivity implements VPNManager.VPNList
     }
 
     private void connect() {
+        if(!BuildConfig.TEST_MODE){
+            WifiManager manager = (WifiManager) this.getSystemService(Context.WIFI_SERVICE);
+            if(manager.isWifiEnabled()){
+                consumoTextView.setText(R.string.text_disable_wifi);
+                consumoTextView.setVisibility(View.VISIBLE);
+                return;
+            }
+        }
         vpnManager.connect(networkReleaseText.getText().toString());
     }
 

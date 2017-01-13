@@ -51,13 +51,6 @@ public class VPNManager {
     }
 
     public void connect(String networkKey){
-        if(!BuildConfig.TEST_MODE){
-            WifiManager manager = (WifiManager) this.activityContext.getSystemService(Context.WIFI_SERVICE);
-            if(manager.isWifiEnabled()){
-                return;
-            }
-        }
-
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this.activityContext);
 
         if(!IndexIP.hasIP(networkKey)){
