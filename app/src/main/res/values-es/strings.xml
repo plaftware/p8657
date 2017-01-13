@@ -94,5 +94,9 @@
     <string name="refresh_log">Actualizar</string>
     <string name="copy_log">Copiar</string>
     <string name="email_log">Enviar por correo</string>
-
+    <string name="item_fb">Facebook</string>
+    <string name="item_version">Versión 2.0.0</string>
+    <string name="drawer_open">Drawer abierto</string>
+    <string name="drawer_close">Drawer cerrado</string>
+    <string name="item_log">LOG</string>
 </resources>

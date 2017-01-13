@@ -95,5 +95,11 @@
     <string name="refresh_log">Refresh</string>
     <string name="copy_log">Copy</string>
     <string name="email_log">Send e-mail</string>
-
+    <string name="item_fb">Facebook</string>
+    <string name="item_version">Version 2.0.0</string>
+    <string name="drawer_open">Opened drawer</string>
+    <string name="drawer_close">Closed drawer</string>
+    <string name="item_log">LOG</string>
+    <string name="enigma_VPN">EnigmaVPN</string>
+    <string name="phreaker">Phreaker</string>
 </resources>

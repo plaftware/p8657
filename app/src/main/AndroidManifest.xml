@@ -50,10 +50,13 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ui.activity.MainActivity" />
         </activity>
-        <activity android:name=".ui.activity.LogActivity">
+        <activity
+            android:name=".ui.activity.LogActivity"
+            android:label="@string/app_name"
+            android:parentActivityName=".ui.activity.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ui.activity.MainActivity" />
+                android:value=".ui.activity.MainActivity"/>
         </activity>
     </application>
 

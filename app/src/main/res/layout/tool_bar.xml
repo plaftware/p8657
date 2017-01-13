@@ -1,0 +1,12 @@
+<android.support.v7.widget.Toolbar
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@android:color/black"
+    android:elevation="7dp"
+    android:minHeight="?attr/actionBarSize"
+    android:id="@+id/tool_bar"
+    android:theme="@style/Theme.AppCompat.NoActionBar"
+    android:popupTheme="@style/Theme.AppCompat.NoActionBar">
+
+</android.support.v7.widget.Toolbar>
