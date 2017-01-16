@@ -99,4 +99,7 @@
     <string name="drawer_open">Drawer abierto</string>
     <string name="drawer_close">Drawer cerrado</string>
     <string name="item_log">LOG</string>
+    <string name="enigma_VPN">EnigmaVPN</string>
+    <string name="phreaker">Phreaker</string>
+    <string name="profile">Profile</string>
 </resources>
