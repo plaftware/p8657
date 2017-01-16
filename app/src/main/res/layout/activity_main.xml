@@ -28,8 +28,6 @@
                 android:paddingTop="@dimen/activity_vertical_margin"
                 android:background="@color/colorTransparent">
 
-
-
                 <TextView
                     android:id="@+id/consumoTextView"
                     android:layout_width="wrap_content"
@@ -125,7 +123,8 @@
                         android:layout_height="wrap_content"
                         android:fontFamily="serif-monospace"
                         android:text="C"
-                        android:textStyle="bold" />
+                        android:textStyle="bold"
+                        android:textColor="@color/colorBlack"/>
 
                     <Switch
                         android:id="@+id/switchC"
@@ -161,7 +160,8 @@
                         android:layout_height="wrap_content"
                         android:fontFamily="serif-monospace"
                         android:text="M"
-                        android:textStyle="bold" />
+                        android:textStyle="bold"
+                        android:textColor="@color/colorBlack"/>
 
                     <Switch
                         android:id="@+id/switchM"
@@ -183,7 +183,8 @@
                         android:fontFamily="serif-monospace"
                         android:paddingRight="5dp"
                         android:text="Speed"
-                        android:textStyle="bold" />
+                        android:textStyle="bold"
+                        android:textColor="@color/colorBlack"/>
 
                     <Switch
                         android:id="@+id/switchCompress"
