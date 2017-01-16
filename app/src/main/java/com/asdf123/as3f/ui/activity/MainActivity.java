@@ -189,6 +189,7 @@ public class MainActivity extends AbstractActivity implements VPNManager.VPNList
             }
         });
 
+/*
         View header = navigationView.getHeaderView(0);
         Menu menu = navigationView.getMenu();
 
@@ -203,6 +204,7 @@ public class MainActivity extends AbstractActivity implements VPNManager.VPNList
         username.setVisibility(View.VISIBLE);
         fecha.setVisibility(View.VISIBLE);
         logItem.setVisible(true);
+*/
 
 
 
@@ -393,10 +395,10 @@ public class MainActivity extends AbstractActivity implements VPNManager.VPNList
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_facebook:
+             /* case R.id.action_facebook:
                 this.navigator.showFaceBookActivity();
                 break;
-           /* case R.id.datos_usuario:
+          case R.id.datos_usuario:
                 this.navigator.showDatosUsuario();
                 break;
             case R.id.log:

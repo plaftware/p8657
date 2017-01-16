@@ -15,5 +15,12 @@
         android:icon="@drawable/facebook"
         android:title="@string/item_fb" />
 
+    <item
+        android:id="@+id/profile"
+        android:checked="false"
+        android:icon="@drawable/user"
+        android:title="@string/profile" />
+
 </group>
+
 </menu>
