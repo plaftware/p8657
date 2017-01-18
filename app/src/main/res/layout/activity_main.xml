@@ -8,6 +8,7 @@
     tools:context=".ui.activity.MainActivity"
     tools:openDrawer="left">
 
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -36,7 +37,6 @@
                     android:layout_centerHorizontal="true"
                     android:layout_marginBottom="0dp"
                     android:gravity="center"
-                    android:text="10 Gbps"
                     android:textAppearance="?android:attr/textAppearanceMedium"
                     android:textColor="#000000"
                     android:textSize="15dp"
@@ -192,28 +192,27 @@
                         android:layout_height="wrap_content" />
                 </LinearLayout>
 
-                <ImageView
+                <!--ImageView
                     android:id="@+id/imgConsumo"
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:layout_alignTop="@+id/consumoTextView"
                     android:layout_toLeftOf="@+id/consumoTextView"
                     android:layout_toStartOf="@+id/consumoTextView"
-                    app:srcCompat="@drawable/conection_consume" />
+                    app:srcCompat="@drawable/conection_consume" /-->
 
                 <android.support.design.widget.FloatingActionButton
                     android:id="@+id/btnStart"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_above="@+id/consumoTextView"
-                    android:layout_marginBottom="16dp"
-                    android:layout_toEndOf="@+id/imgConsumo"
-                    android:layout_toRightOf="@+id/imgConsumo"
+                    android:layout_marginBottom="12dp"
                     android:background="@android:color/holo_blue_dark"
                     android:clickable="true"
                     android:scaleType="centerCrop"
                     app:fabSize="normal"
-                    app:srcCompat="@drawable/disconnected" />
+                    app:srcCompat="@drawable/disconnected"
+                    android:layout_above="@+id/consumoTextView"
+                    android:layout_centerHorizontal="true" />
             </RelativeLayout>
     </LinearLayout>
 

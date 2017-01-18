@@ -20,7 +20,7 @@ android {
         buildConfigField("String", "PASSW", "\"@@mcjorsh@@VPN\"")
         buildConfigField("String", "DEFAULT_PORT", "\"80\"")
 
-        buildConfigField("Boolean", "TEST_MODE", "false")
+        buildConfigField("Boolean", "TEST_MODE", "true")
         buildConfigField("String", "TEST_USER", "\"m1859259934\"")
         buildConfigField("String", "TEST_PASSW", "\"@@mcjorsh@@VPN\"")
         buildConfigField("String", "TEST_NETWORK", "\"cb3a211733208b87a25030d21789ffee\"")
@@ -34,6 +34,19 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+    }
+
+    packagingOptions {
+        exclude 'META-INF/DEPENDENCIES.txt'
+        exclude 'META-INF/DEPENDENCIES'
+        exclude 'META-INF/dependencies.txt'
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/license.txt'
+        exclude 'META-INF/LGPL2.1'
+        exclude 'META-INF/NOTICE.txt'
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/notice.txt'
     }
 }
 
@@ -49,4 +62,7 @@ dependencies {
     compile 'com.jakewharton:butterknife:7.0.1'
     provided 'com.squareup.dagger:dagger-compiler:1.2.2'
     compile 'com.android.support:design:25.1.0'
+
+    compile 'org.springframework.android:spring-android-rest-template:1.0.1.RELEASE'
+    compile 'com.fasterxml.jackson.core:jackson-databind:2.3.2'
 }

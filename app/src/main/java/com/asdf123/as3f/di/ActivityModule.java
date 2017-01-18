@@ -18,4 +18,5 @@ import dagger.Provides;
   Context provideActivityContext() {
     return activity;
   }
+
 }

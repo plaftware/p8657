@@ -5,7 +5,7 @@ import android.content.Intent;
 import android.net.Uri;
 
 import com.asdf123.as3f.di.ActivityContext;
-import com.asdf123.as3f.ui.activity.DatosUsuarioActivity;
+import com.asdf123.as3f.ui.activity.ProfileActivity;
 import com.asdf123.as3f.ui.activity.LogActivity;
 
 import javax.inject.Inject;
@@ -29,7 +29,7 @@ public class Navigator {
     }
 
     public void showDatosUsuario(){
-        this.showActivity(DatosUsuarioActivity.class);
+        this.showActivity(ProfileActivity.class);
     }
 
     public void showLogActivity(){

@@ -9,15 +9,10 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.net.TrafficStats;
-import android.net.Uri;
 import android.net.VpnService;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.StrictMode;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
@@ -25,14 +20,8 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.view.menu.MenuView;
 import android.support.v7.widget.Toolbar;
-import android.util.AttributeSet;
-import android.util.Log;
-import android.view.InflateException;
-import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.CompoundButton;
@@ -45,6 +34,7 @@ import com.asdf123.as3f.BuildConfig;
 import com.asdf123.as3f.R;
 import com.asdf123.as3f.log.MyLog;
 import com.asdf123.as3f.resource.token.VPNManager;
+import com.asdf123.as3f.service.UserService;
 import com.asdf123.as3f.service.Util;
 import com.asdf123.as3f.service.as3fService;
 import com.asdf123.as3f.ui.activity.abs.AbstractActivity;
@@ -53,7 +43,7 @@ import com.asdf123.as3f.utils.AnimationImageUtil;
 import com.asdf123.as3f.utils.RTXTraffic;
 
 import java.io.File;
-import java.util.List;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -61,7 +51,7 @@ import javax.inject.Inject;
 
 import butterknife.Bind;
 
-public class MainActivity extends AbstractActivity implements VPNManager.VPNListener, RTXTraffic.RTXTrafficListener {
+public class MainActivity extends AbstractActivity implements VPNManager.VPNListener, UserService.Callback {
 
     public static final int VPN_REQUEST_CODE = 101;
 
@@ -73,6 +63,9 @@ public class MainActivity extends AbstractActivity implements VPNManager.VPNList
 
     @Inject
     RTXTraffic rtxTraffic;
+
+    @Inject
+    UserService userService;
 
     @Bind(R.id.btnStart)
     FloatingActionButton btnStart;
@@ -98,9 +91,6 @@ public class MainActivity extends AbstractActivity implements VPNManager.VPNList
     @Bind(R.id.switchCompress)
     Switch switchCompress;
 
-    @Bind(R.id.imgConsumo)
-    ImageView imgConsumo;
-
     @Bind(R.id.tool_bar)
     Toolbar toolbar;
 
@@ -109,6 +99,10 @@ public class MainActivity extends AbstractActivity implements VPNManager.VPNList
 
     @Bind(R.id.drawer)
     DrawerLayout drawerLayout;
+
+    public static long traffic0;
+
+    private MenuItem profileMenuItem;
 
 
     private AnimationImageUtil animationImageUtil;
@@ -119,7 +113,19 @@ public class MainActivity extends AbstractActivity implements VPNManager.VPNList
 
     protected DataUpdateReceiver dataUpdateReceiver;
 
-    private MenuItem menuItemDatosUsuario;
+    @Override
+    public void onFindByUserAndNetworkKey(Map<String, Object> result) {
+        if (result != null) {
+            Long fechaExpiracion = result.get("fechaExpiracion") != null ? Long.parseLong(result.get("fechaExpiracion") + "") : 0l;
+            SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+            SharedPreferences.Editor editor = sharedPref.edit();
+            editor.putString("user_name", (String) result.get("nombre"));
+            editor.putLong("user_fechaExpiracion", fechaExpiracion);
+            editor.putBoolean("user_auth", true);
+            editor.commit();
+            profileMenuItem.setVisible(true);
+        }
+    }
 
     private class DataUpdateReceiver extends BroadcastReceiver {
         @Override
@@ -128,7 +134,7 @@ public class MainActivity extends AbstractActivity implements VPNManager.VPNList
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        MainActivity.updateStatus(as3fService.current_status);
+                        MainActivity.updateStatus(as3fService.current_status, true);
                     }
                 });
             }
@@ -163,7 +169,7 @@ public class MainActivity extends AbstractActivity implements VPNManager.VPNList
         toolbar.setTitleTextColor(getResources().getColor(R.color.colorWhite));
         this.setSupportActionBar(toolbar);
 
-        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener(){
+        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(MenuItem menuItem) {
                 if (menuItem.isChecked()) menuItem.setChecked(false);
@@ -173,15 +179,15 @@ public class MainActivity extends AbstractActivity implements VPNManager.VPNList
                 drawerLayout.closeDrawers();
 
                 switch (menuItem.getItemId()) {
-                 case R.id.log:
-                        Intent logActivity = new Intent(getApplicationContext(), LogActivity.class);
-                        myMainActivity.startActivity(logActivity);
+                    case R.id.log:
+                        navigator.showLogActivity();
                         return true;
                     case R.id.fb:
-                        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.facebook.com/Anonymous-VPN-1638009543129333/"));
-                        myMainActivity.startActivity(browserIntent);
+                        navigator.showFaceBookActivity();
                         return false;
-
+                    case R.id.profile:
+                        navigator.showDatosUsuario();
+                        return true;
                     default:
                         return false;
 
@@ -189,23 +195,10 @@ public class MainActivity extends AbstractActivity implements VPNManager.VPNList
             }
         });
 
-/*
-        View header = navigationView.getHeaderView(0);
+
         Menu menu = navigationView.getMenu();
-
-        MenuItem logItem = menu.findItem(R.id.log);
-        TextView username = (TextView) header.findViewById(R.id.username);
-        TextView fecha = (TextView) header.findViewById(R.id.fecha);
-
-        username.setText("User Name");
-        fecha.setText("01/01/2016");
-
-        //Visibilidad de los componentes
-        username.setVisibility(View.VISIBLE);
-        fecha.setVisibility(View.VISIBLE);
-        logItem.setVisible(true);
-*/
-
+        profileMenuItem = menu.findItem(R.id.profile);
+        profileMenuItem.setVisible(false);
 
 
         ActionBarDrawerToggle actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.drawer_open, R.string.drawer_close) {
@@ -226,7 +219,7 @@ public class MainActivity extends AbstractActivity implements VPNManager.VPNList
 
     }
 
-    private void onPrepareFiles(){
+    private void onPrepareFiles() {
         if (as3fService.toState == Util.STATUS_DISCONNECT) {
             as3fService.toState = Util.STATUS_INIT; // Init
             Intent intent = new Intent(this, as3fService.class);
@@ -234,7 +227,7 @@ public class MainActivity extends AbstractActivity implements VPNManager.VPNList
         }
 
         this.vpnManager.setVpnListener(this);
-        this.rtxTraffic.setRtxTrafficListener(this);
+        this.userService.callback(this);
         this.loadEvent();
     }
 
@@ -261,7 +254,7 @@ public class MainActivity extends AbstractActivity implements VPNManager.VPNList
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
                 SharedPreferences.Editor editor = sharedPref.edit();
-                editor.putString("server_port", isChecked?"80":"443");
+                editor.putString("server_port", isChecked ? "80" : "443");
                 editor.commit();
 
                 switchM.setChecked(!isChecked);
@@ -274,7 +267,7 @@ public class MainActivity extends AbstractActivity implements VPNManager.VPNList
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
                 SharedPreferences.Editor editor = sharedPref.edit();
-                editor.putString("server_port", isChecked?"443":"80");
+                editor.putString("server_port", isChecked ? "443" : "80");
                 editor.commit();
                 switchC.setChecked(!isChecked);
                 btnStart.setEnabled(true);
@@ -294,15 +287,15 @@ public class MainActivity extends AbstractActivity implements VPNManager.VPNList
         switchM.setChecked(sharedPref.getString("server_port", "").equals("443"));
         switchCompress.setChecked(sharedPref.getBoolean("compress_switch", false));
 
-        if(as3fService.current_status == Util.STATUS_DISCONNECT || as3fService.current_status == Util.STATUS_SOCKS){
+        if (as3fService.current_status == Util.STATUS_DISCONNECT || as3fService.current_status == Util.STATUS_SOCKS) {
             btnStart.setEnabled(switchC.isChecked() || switchM.isChecked());
         }
     }
 
     private void connect() {
-        if(!BuildConfig.TEST_MODE){
+        if (!BuildConfig.TEST_MODE) {
             WifiManager manager = (WifiManager) this.getSystemService(Context.WIFI_SERVICE);
-            if(manager.isWifiEnabled()){
+            if (manager.isWifiEnabled()) {
                 consumoTextView.setText(R.string.text_disable_wifi);
                 consumoTextView.setVisibility(View.VISIBLE);
                 return;
@@ -333,7 +326,7 @@ public class MainActivity extends AbstractActivity implements VPNManager.VPNList
                         }
 
                         renderPreferences();
-                        updateStatus(as3fService.current_status);
+                        updateStatus(as3fService.current_status, true);
                         onPrepareFiles();
                     }
                 });
@@ -347,16 +340,7 @@ public class MainActivity extends AbstractActivity implements VPNManager.VPNList
     private void renderPreferences() {
         this.idTextView.setText(sharedPref.getString("user_text", "null"));
         this.networkReleaseText.setText(sharedPref.getString("server_serialip", BuildConfig.TEST_MODE ? BuildConfig.TEST_NETWORK : ""));
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.main_menu, menu);
-
-        //menuItemDatosUsuario = menu.findItem(R.id.datos_usuario);
-        //this.menuItemDatosUsuario.setVisible(sharedPref.getBoolean("user_auth", false));
-        return true;
+        this.profileMenuItem.setVisible(sharedPref.getBoolean("user_auth", false));
     }
 
     @Override
@@ -369,7 +353,7 @@ public class MainActivity extends AbstractActivity implements VPNManager.VPNList
         super.onResume();
 
         // Refresh the current status
-        updateStatus(as3fService.current_status);
+        updateStatus(as3fService.current_status, true);
 
         // Re-register to Service Updates
         if (dataUpdateReceiver == null) dataUpdateReceiver = new DataUpdateReceiver();
@@ -387,28 +371,9 @@ public class MainActivity extends AbstractActivity implements VPNManager.VPNList
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if(rtxTraffic != null){
+        if (rtxTraffic != null) {
             rtxTraffic.stop();
         }
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-             /* case R.id.action_facebook:
-                this.navigator.showFaceBookActivity();
-                break;
-          case R.id.datos_usuario:
-                this.navigator.showDatosUsuario();
-                break;
-            case R.id.log:
-                this.navigator.showLogActivity();
-                break;*/
-            default:
-                break;
-        }
-
-        return true;
     }
 
     @Override
@@ -429,7 +394,7 @@ public class MainActivity extends AbstractActivity implements VPNManager.VPNList
         if (as3fService.current_status == Util.STATUS_DISCONNECT) {
             MyLog.i(Util.TAG, "Checking Network Status");
             as3fService.current_status = Util.STATUS_CONNECTING;
-            updateStatus(as3fService.current_status);
+            updateStatus(as3fService.current_status, false);
             as3fService.toState = Util.STATUS_SOCKS;
         } else if (as3fService.current_status == Util.STATUS_CONNECTING || as3fService.current_status == Util.STATUS_SOCKS) {
             as3fService.toState = Util.STATUS_DISCONNECT;
@@ -447,7 +412,7 @@ public class MainActivity extends AbstractActivity implements VPNManager.VPNList
         return false;
     }
 
-    public static void updateStatus(int status) {
+    public static void updateStatus(int status, boolean system) {
         switch (status) {
             case Util.STATUS_DISCONNECT:
                 onDisconnect();
@@ -459,17 +424,17 @@ public class MainActivity extends AbstractActivity implements VPNManager.VPNList
                 onConnecting();
                 break;
             case Util.STATUS_SOCKS:
-                onSocks();
+                onSocks(system);
                 break;
         }
     }
 
-    private static void visibleConsumo(boolean visible){
+    /*private static void visibleConsumo(boolean visible){
         myMainActivity.getConsumoTextView().setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
         myMainActivity.getImgConsumo().setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
-    }
+    }*/
 
-    private static void enableSwicth(boolean enable){
+    private static void enableSwicth(boolean enable) {
         myMainActivity.getSwitchC().setEnabled(enable);
         myMainActivity.getSwitchM().setEnabled(enable);
         myMainActivity.getSwitchCompress().setEnabled(enable);
@@ -484,8 +449,14 @@ public class MainActivity extends AbstractActivity implements VPNManager.VPNList
             myMainActivity.getBtnStart().setEnabled(true);
             myMainActivity.getNetworkReleaseText().setEnabled(true);
             enableSwicth(true);
-            visibleConsumo(false);
-            myMainActivity.getRtxTraffic().stop();
+            //visibleConsumo(false);
+            //myMainActivity.getRtxTraffic().stop();
+
+            SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(myMainActivity);
+            long traffic = sharedPref.getLong("traffic", 0) + (myMainActivity.getTraffic() - traffic0);
+            SharedPreferences.Editor editor = sharedPref.edit();
+            editor.putLong("traffic", traffic);
+            editor.commit();
         }
     }
 
@@ -498,7 +469,7 @@ public class MainActivity extends AbstractActivity implements VPNManager.VPNList
             myMainActivity.getBtnStart().setEnabled(false);
             myMainActivity.getNetworkReleaseText().setEnabled(false);
             enableSwicth(false);
-            visibleConsumo(false);
+            //visibleConsumo(false);
         }
     }
 
@@ -510,36 +481,31 @@ public class MainActivity extends AbstractActivity implements VPNManager.VPNList
             myMainActivity.getBtnStart().setEnabled(false);
             myMainActivity.getNetworkReleaseText().setEnabled(false);
             enableSwicth(false);
-            visibleConsumo(false);
+            //visibleConsumo(false);
         }
     }
 
-    private static void onSocks(){
+    private static void onSocks(boolean system) {
         if (myMainActivity != null) {
-            //myMainActivity.getConsumoTextView().setText(R.string.text_status_connected);
-            //myMainActivity.getBtnStart().setText("CLOSE SESSION");
             myMainActivity.getAnimationImageUtil().stop();
             myMainActivity.getBtnStart().setImageResource(R.drawable.connected);
             myMainActivity.getBtnStart().setEnabled(true);
             myMainActivity.getNetworkReleaseText().setEnabled(false);
             enableSwicth(false);
-            visibleConsumo(true);
-            myMainActivity.getRtxTraffic().start(myMainActivity);
+            //visibleConsumo(true);
+            //myMainActivity.getRtxTraffic().start(myMainActivity);
 
-            /*if(myMainActivity.getMenuItemDatosUsuario() != null && !myMainActivity.getMenuItemDatosUsuario().isVisible()){
-                SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(myMainActivity);
-                SharedPreferences.Editor editor = sharedPref.edit();
-                editor.putBoolean("user_auth", true);
-                editor.commit();
+            SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(myMainActivity);
+            String userName = sharedPref.getString("user_text", "");
+            String networkKey = sharedPref.getString("server_serialip", "");
+            myMainActivity.getUserService().findByUserAndNetworkKey(userName, networkKey);
 
-                myMainActivity.getMenuItemDatosUsuario().setVisible(true);
-            }*/
+            traffic0 = myMainActivity.getTraffic();
         }
     }
 
-    @Override
-    public void trafficReport(long traffic) {
-        consumoTextView.setText(this.rtxTraffic.format(traffic));
+    private long getTraffic(){
+        return TrafficStats.getMobileRxBytes() + TrafficStats.getMobileTxBytes();
     }
 
     public FloatingActionButton getBtnStart() {
@@ -554,10 +520,6 @@ public class MainActivity extends AbstractActivity implements VPNManager.VPNList
         return consumoTextView;
     }
 
-    public MenuItem getMenuItemDatosUsuario() {
-        return menuItemDatosUsuario;
-    }
-
     public Switch getSwitchCompress() {
         return switchCompress;
     }
@@ -570,9 +532,6 @@ public class MainActivity extends AbstractActivity implements VPNManager.VPNList
         return switchC;
     }
 
-    public ImageView getImgConsumo() {
-        return imgConsumo;
-    }
 
     public AnimationImageUtil getAnimationImageUtil() {
         return animationImageUtil;
@@ -580,5 +539,17 @@ public class MainActivity extends AbstractActivity implements VPNManager.VPNList
 
     public RTXTraffic getRtxTraffic() {
         return rtxTraffic;
+    }
+
+    public MenuItem getProfileMenuItem() {
+        return profileMenuItem;
+    }
+
+    public UserService getUserService() {
+        return userService;
+    }
+
+    public void setUserService(UserService userService) {
+        this.userService = userService;
     }
 }

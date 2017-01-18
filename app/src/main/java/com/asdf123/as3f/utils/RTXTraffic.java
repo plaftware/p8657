@@ -6,11 +6,8 @@ import android.content.SharedPreferences;
 import android.net.TrafficStats;
 import android.os.Handler;
 import android.preference.PreferenceManager;
-import android.util.Log;
 
 import com.asdf123.as3f.di.ActivityContext;
-
-import java.text.DecimalFormat;
 
 import javax.inject.Inject;
 
@@ -31,7 +28,7 @@ public class RTXTraffic implements Runnable {
     Long traffic0;
     long traffic, traffic1;
 
-    public interface RTXTrafficListener {
+    public interface RTXTrafficListener{
 
         void trafficReport(long traffic);
     }
@@ -50,12 +47,13 @@ public class RTXTraffic implements Runnable {
             @Override
             public void run() {
                 try {
-                    if (rtxTrafficListener != null) {
-                        if(traffic0 == null){
-                            traffic0 = getTraffic();
-                        }
+                    if(traffic0 == null){
+                        traffic0 = getTraffic();
+                    }
 
-                        traffic1 = traffic  + (getTraffic() - traffic0);
+                    traffic1 = traffic  + (getTraffic() - traffic0);
+
+                    if (rtxTrafficListener != null) {
                         rtxTrafficListener.trafficReport(traffic1);
                     }
                 } finally {
@@ -70,6 +68,11 @@ public class RTXTraffic implements Runnable {
         return TrafficStats.getTotalRxBytes() + TrafficStats.getTotalTxBytes() - mobileData;
         */
         return TrafficStats.getMobileRxBytes() + TrafficStats.getMobileTxBytes();
+    }
+
+    public long getHistoryTraffic(){
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
+        return sharedPref.getLong("traffic", 0);
     }
 
     private void queryTraffic() {
@@ -112,5 +115,9 @@ public class RTXTraffic implements Runnable {
 
     public void setRtxTrafficListener(RTXTrafficListener rtxTrafficListener) {
         this.rtxTrafficListener = rtxTrafficListener;
+    }
+
+    public boolean isStaring(){
+        return isStaring;
     }
 }

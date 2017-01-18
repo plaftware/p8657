@@ -4,12 +4,13 @@
     android:id="@+id/activity_datos_usuario"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context="com.asdf123.as3f.ui.activity.DatosUsuarioActivity">
+    tools:context="com.asdf123.as3f.ui.activity.ProfileActivity">
+
+    <include
+        layout="@layout/tool_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
 
     <LinearLayout
         android:id="@+id/inputContent"
@@ -19,6 +20,8 @@
         android:layout_alignParentRight="true"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
         android:orientation="vertical">
 
         <TextView
@@ -32,11 +35,9 @@
             android:id="@+id/textView" />
 
         <TextView
-            android:text="TextView"
             android:layout_marginTop="10dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingLeft="3dp"
             android:paddingTop="5dp"
             android:paddingBottom="5dp"
             android:id="@+id/idTextView"
@@ -58,48 +59,49 @@
             android:textColor="@android:color/holo_blue_dark"
             android:id="@+id/textView2" />
 
-        <EditText
+        <TextView
+            android:layout_marginTop="10dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:paddingTop="5dp"
             android:paddingLeft="3dp"
+            android:paddingTop="5dp"
             android:paddingBottom="5dp"
-            android:inputType="text"
-            android:ems="10"
             android:id="@+id/networkReleaseText"
-            android:textSize="12sp"
             android:background="#9ab"
-            android:hint="network release"
-            android:textAlignment="center"
+            android:shadowDx="0"
+            android:shadowDy="0"
+            android:shadowRadius="5"
+            android:shadowColor="#222"
             android:gravity="center"
-            android:textColor="@android:color/black" />
+            android:textColor="@android:color/background_dark" />
+
+        <TextView
+            android:layout_gravity="center"
+            android:text="Consumo:"
+            android:textSize="18dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:textColor="@android:color/holo_blue_dark" />
+
+        <TextView
+            android:layout_marginTop="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="3dp"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
+            android:id="@+id/consumo"
+            android:background="#9ab"
+            android:shadowDx="0"
+            android:shadowDy="0"
+            android:shadowRadius="5"
+            android:shadowColor="#222"
+            android:gravity="center"
+            android:textColor="@android:color/background_dark" />
 
 
     </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/layout_c"
-        android:layout_marginTop="10dp"
-        android:orientation="horizontal"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/inputContent">
-
-    </LinearLayout>
-
-    <!--Button
-        android:layout_marginTop="15dp"
-        android:layout_width="wrap_content"
-        android:layout_height="40dp"
-        android:layout_centerHorizontal="true"
-        android:layout_below="@+id/inputContent"
-        android:paddingLeft="10dp"
-        android:paddingRight="10dp"
-        android:text="Start Session"
-        android:textColor="#049"
-        android:background="@android:color/holo_blue_dark"
-        android:id="@+id/btnStart" /-->
 
     <ImageButton
         android:id="@+id/imgCognito"
@@ -109,28 +111,8 @@
         android:src="@drawable/cognito"
         android:scaleType="centerCrop"
         android:background="#00000000"
-        android:layout_alignParentTop="true"
+        android:layout_below="@+id/tool_bar"
+        android:layout_marginTop="10dp"
         android:layout_centerHorizontal="true" />
-
-    <LinearLayout
-        android:id="@+id/layout_m"
-        android:orientation="horizontal"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/layout_c"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true">
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignTop="@+id/layout_c"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true">
-
-    </LinearLayout>
 
 </RelativeLayout>
