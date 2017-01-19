@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">AnonymousVPN</string>
+    <string name="app_name_log">AnonymousVPN - Log</string>
+    <string name="app_name_profile">AnonymousVPN - Perfil</string>
     <string name="str_config">Estado</string>
     <string name="title_activity_settings">Preferencias</string>
 

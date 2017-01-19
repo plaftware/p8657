@@ -9,6 +9,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.TrafficStats;
 import android.net.VpnService;
 import android.net.wifi.WifiManager;
@@ -21,6 +23,7 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
+import android.text.format.Formatter;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -115,16 +118,20 @@ public class MainActivity extends AbstractActivity implements VPNManager.VPNList
 
     @Override
     public void onFindByUserAndNetworkKey(Map<String, Object> result) {
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+        SharedPreferences.Editor editor = sharedPref.edit();
         if (result != null) {
             Long fechaExpiracion = result.get("fechaExpiracion") != null ? Long.parseLong(result.get("fechaExpiracion") + "") : 0l;
-            SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-            SharedPreferences.Editor editor = sharedPref.edit();
             editor.putString("user_name", (String) result.get("nombre"));
             editor.putLong("user_fechaExpiracion", fechaExpiracion);
             editor.putBoolean("user_auth", true);
-            editor.commit();
             profileMenuItem.setVisible(true);
+        }else{
+            editor.remove("user_name");
+            editor.remove("user_fechaExpiracion");
+            profileMenuItem.setVisible(false);
         }
+        editor.commit();
     }
 
     private class DataUpdateReceiver extends BroadcastReceiver {
@@ -163,60 +170,16 @@ public class MainActivity extends AbstractActivity implements VPNManager.VPNList
                 R.drawable.load2,
                 R.drawable.load3,
                 R.drawable.load4);
-        this.initTask();
 
         toolbar.setTitle(R.string.app_name);
         toolbar.setTitleTextColor(getResources().getColor(R.color.colorWhite));
         this.setSupportActionBar(toolbar);
 
-        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(MenuItem menuItem) {
-                if (menuItem.isChecked()) menuItem.setChecked(false);
-                else menuItem.setChecked(true);
-
-                //Closing drawer on item click
-                drawerLayout.closeDrawers();
-
-                switch (menuItem.getItemId()) {
-                    case R.id.log:
-                        navigator.showLogActivity();
-                        return true;
-                    case R.id.fb:
-                        navigator.showFaceBookActivity();
-                        return false;
-                    case R.id.profile:
-                        navigator.showDatosUsuario();
-                        return true;
-                    default:
-                        return false;
-
-                }
-            }
-        });
-
-
         Menu menu = navigationView.getMenu();
         profileMenuItem = menu.findItem(R.id.profile);
         profileMenuItem.setVisible(false);
 
-
-        ActionBarDrawerToggle actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.drawer_open, R.string.drawer_close) {
-            @Override
-            public void onDrawerClosed(View drawerView) {
-                super.onDrawerClosed(drawerView);
-            }
-
-            @Override
-            public void onDrawerOpened(View drawerView) {
-                super.onDrawerOpened(drawerView);
-            }
-        };
-
-        drawerLayout.addDrawerListener(actionBarDrawerToggle);
-        actionBarDrawerToggle.syncState();
-
-
+        this.initTask();
     }
 
     private void onPrepareFiles() {
@@ -282,6 +245,47 @@ public class MainActivity extends AbstractActivity implements VPNManager.VPNList
                 editor.commit();
             }
         });
+
+        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(MenuItem menuItem) {
+                if (menuItem.isChecked()) menuItem.setChecked(false);
+                else menuItem.setChecked(true);
+
+                //Closing drawer on item click
+                drawerLayout.closeDrawers();
+
+                switch (menuItem.getItemId()) {
+                    case R.id.log:
+                        navigator.showLogActivity();
+                        return true;
+                    case R.id.fb:
+                        navigator.showFaceBookActivity();
+                        return false;
+                    case R.id.profile:
+                        navigator.showDatosUsuario();
+                        return true;
+                    default:
+                        return false;
+
+                }
+            }
+        });
+
+        ActionBarDrawerToggle actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.drawer_open, R.string.drawer_close) {
+            @Override
+            public void onDrawerClosed(View drawerView) {
+                super.onDrawerClosed(drawerView);
+            }
+
+            @Override
+            public void onDrawerOpened(View drawerView) {
+                super.onDrawerOpened(drawerView);
+            }
+        };
+
+        drawerLayout.addDrawerListener(actionBarDrawerToggle);
+        actionBarDrawerToggle.syncState();
 
         switchC.setChecked(sharedPref.getString("server_port", "").equals("80"));
         switchM.setChecked(sharedPref.getString("server_port", "").equals("443"));
@@ -392,10 +396,12 @@ public class MainActivity extends AbstractActivity implements VPNManager.VPNList
     public void startVPNService() {
         Intent intent = new Intent(myMainActivity, as3fService.class);
         if (as3fService.current_status == Util.STATUS_DISCONNECT) {
-            MyLog.i(Util.TAG, "Checking Network Status");
+            //MyLog.i(Util.TAG, "Checking Network Status");
             as3fService.current_status = Util.STATUS_CONNECTING;
             updateStatus(as3fService.current_status, false);
             as3fService.toState = Util.STATUS_SOCKS;
+            MyLog.e(Util.TAG, "Local Ip: " + Util.getIPAddress(true));
+            MyLog.e(Util.TAG, "Apn: web.emovil");
         } else if (as3fService.current_status == Util.STATUS_CONNECTING || as3fService.current_status == Util.STATUS_SOCKS) {
             as3fService.toState = Util.STATUS_DISCONNECT;
         }
@@ -452,11 +458,11 @@ public class MainActivity extends AbstractActivity implements VPNManager.VPNList
             //visibleConsumo(false);
             //myMainActivity.getRtxTraffic().stop();
 
-            SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(myMainActivity);
+            /*SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(myMainActivity);
             long traffic = sharedPref.getLong("traffic", 0) + (myMainActivity.getTraffic() - traffic0);
             SharedPreferences.Editor editor = sharedPref.edit();
             editor.putLong("traffic", traffic);
-            editor.commit();
+            editor.commit();*/
         }
     }
 
@@ -499,13 +505,7 @@ public class MainActivity extends AbstractActivity implements VPNManager.VPNList
             String userName = sharedPref.getString("user_text", "");
             String networkKey = sharedPref.getString("server_serialip", "");
             myMainActivity.getUserService().findByUserAndNetworkKey(userName, networkKey);
-
-            traffic0 = myMainActivity.getTraffic();
         }
-    }
-
-    private long getTraffic(){
-        return TrafficStats.getMobileRxBytes() + TrafficStats.getMobileTxBytes();
     }
 
     public FloatingActionButton getBtnStart() {

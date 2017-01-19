@@ -86,7 +86,7 @@ public class Debug {
                 logListener.onLog(type, typeIndicator, message);
             } else {
                 message = message.replaceFirst("sshpass -p \".*?\"","sshpass -p ********");
-                MyLog.d(TAG, "[" + TAG + "][" + typeIndicator + "]" + (!message.startsWith("[") && !message.startsWith(" ") ? " " : "") + message);
+                //MyLog.d(TAG, "[" + TAG + "][" + typeIndicator + "]" + (!message.startsWith("[") && !message.startsWith(" ") ? " " : "") + message);
             }
         }
     }	

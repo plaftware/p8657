@@ -29,7 +29,7 @@ public class ForwardInfo {
         try {
             return new ForwardInfo(json.getString("src_port"),json.getString("dest_host"),json.getString("dest_port"),json.getBoolean("local"));
         } catch (JSONException e) {
-            MyLog.e(Util.TAG,"JSONException: " + e.getMessage());
+            //MyLog.e(Util.TAG,"JSONException: " + e.getMessage());
             return new ForwardInfo();
         }
     }
@@ -42,7 +42,7 @@ public class ForwardInfo {
             obj.put("dest_port", this.getDest_port());
             obj.put("local", this.is_local());
         } catch (JSONException e) {
-            MyLog.e(Util.TAG,"JSONException: " + e.getMessage());
+            //MyLog.e(Util.TAG,"JSONException: " + e.getMessage());
         }
         return obj;
     }

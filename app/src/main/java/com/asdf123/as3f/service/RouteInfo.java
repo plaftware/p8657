@@ -23,7 +23,7 @@ public class RouteInfo {
         try {
             return new RouteInfo(json.getString("route_address"),json.getString("prefix_length"));
         } catch (JSONException e) {
-            MyLog.e(Util.TAG,"JSONException: " + e.getMessage());
+            //MyLog.e(Util.TAG,"JSONException: " + e.getMessage());
             return new RouteInfo();
         }
     }
@@ -34,7 +34,7 @@ public class RouteInfo {
             obj.put("route_address", this.getRoute_address());
             obj.put("prefix_length", this.getPrefix_length());
         } catch (JSONException e) {
-            MyLog.e(Util.TAG,"JSONException: " + e.getMessage());
+            //MyLog.e(Util.TAG,"JSONException: " + e.getMessage());
         }
         return obj;
     }

@@ -7,10 +7,9 @@ import android.net.ConnectivityManager;
 import android.net.LocalSocket;
 import android.net.LocalSocketAddress;
 import android.net.NetworkInfo;
+import android.net.TrafficStats;
 import android.net.wifi.WifiManager;
 import android.telephony.TelephonyManager;
-
-import com.asdf123.as3f.log.MyLog;
 
 import java.io.File;
 import java.io.FileDescriptor;
@@ -20,8 +19,12 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Method;
 import java.net.HttpURLConnection;
+import java.net.InetAddress;
 import java.net.MalformedURLException;
+import java.net.NetworkInterface;
 import java.net.URL;
+import java.util.Collections;
+import java.util.List;
 
 import eu.chainfire.libsuperuser.Shell;
 
@@ -144,9 +147,9 @@ public class Util {
                     return true;
                 }
             } catch (MalformedURLException e1) {
-                MyLog.i(TAG, "Couldn't connect [Malformed] " + e1.toString());
+                //MyLog.i(TAG, "Couldn't connect [Malformed] " + e1.toString());
             } catch (IOException e) {
-                MyLog.i(TAG, "Couldn't connect " + e.toString());
+                //MyLog.i(TAG, "Couldn't connect " + e.toString());
             }
         }
         return false;
@@ -211,7 +214,7 @@ public class Util {
                 }
             }
         } catch (IOException ex) {
-            MyLog.e(TAG, "I/O Exception", ex);
+            //MyLog.e(TAG, "I/O Exception", ex);
         }
     }
 
@@ -232,7 +235,7 @@ public class Util {
             out.flush();
             out.close();
         } catch (Exception e) {
-            MyLog.e(TAG, "Exception when copying asset", e);
+            //MyLog.e(TAG, "Exception when copying asset", e);
         }
     }
 
@@ -245,7 +248,7 @@ public class Util {
                 if (children[i].equals("id_rsa") ||
                         children[i].equals("header_file"))
                     continue;
-                MyLog.d(TAG, "Deleting = " + children[i]);
+                //MyLog.d(TAG, "Deleting = " + children[i]);
                 deleteDir(new File(as3f_folder, children[i]));
             }
         }
@@ -310,7 +313,7 @@ public class Util {
         //--dnsgw " + tunVPN_IP + ":8153
         //--loglevel 5
 
-        MyLog.d(TAG, "Let's send FD to tun2socks");
+        //MyLog.d(TAG, "Let's send FD to tun2socks");
         LocalSocket clientSocket = new LocalSocket();
         try {
             Thread.sleep(500); //Let's wait just a little bit before looking for file
@@ -318,7 +321,7 @@ public class Util {
             clientSocket.connect(new LocalSocketAddress(localSocksFile, LocalSocketAddress.Namespace.FILESYSTEM));
             if(!clientSocket.isConnected())
             {
-                MyLog.e(TAG,"Unable to connect to localSocksFile ["+localSocksFile+"]");
+                //MyLog.e(TAG,"Unable to connect to localSocksFile ["+localSocksFile+"]");
                 return false;
             }
 
@@ -332,13 +335,13 @@ public class Util {
 
         } catch (IOException e) {
             e.printStackTrace();
-            MyLog.e(TAG,"Unable to connect to localSocksFile ["+localSocksFile+"]");
+            //MyLog.e(TAG,"Unable to connect to localSocksFile ["+localSocksFile+"]");
             return false;
         } catch (InterruptedException e) {
             e.printStackTrace();
             return false;
         }
-        MyLog.d(TAG, "Done tun2socks RUN");
+        //MyLog.d(TAG, "Done tun2socks RUN");
         return true;
     }
 
@@ -347,7 +350,7 @@ public class Util {
         String localSSHfd = BASE + "/sshfd_file";
         int sshfd = 0;
 
-        MyLog.d(TAG, "Let's get sshfd");
+        //MyLog.d(TAG, "Let's get sshfd");
         LocalSocket clientSocket = new LocalSocket();
         try {
             LocalSocketAddress localAdd = new LocalSocketAddress(localSSHfd, LocalSocketAddress.Namespace.FILESYSTEM);
@@ -365,7 +368,7 @@ public class Util {
 
             if(!clientSocket.isConnected())
             {
-                MyLog.e(TAG,"Unable to connect to localSSHfd [" + localSSHfd + "]");
+                //MyLog.e(TAG,"Unable to connect to localSSHfd [" + localSSHfd + "]");
                 //Return an invalid sshfd
                 return sshfd;
             }
@@ -390,17 +393,17 @@ public class Util {
 
         } catch (Exception e) {
             e.printStackTrace();
-            MyLog.e(TAG, "Unable to connect to localSSHfd [" + localSSHfd + "]");
+            //MyLog.e(TAG, "Unable to connect to localSSHfd [" + localSSHfd + "]");
             return sshfd;
         }
 
-        MyLog.d(TAG,"Got SSHfd ["+sshfd+"]");
+        //MyLog.d(TAG,"Got SSHfd ["+sshfd+"]");
         return sshfd;
     }
 
     protected static void startKi4aVPN(Context context, String prefix)
     {
-        MyLog.d(TAG, "Util.startVPN");
+        //MyLog.d(TAG, "Util.startVPN");
         Intent intentVpn = new Intent(context,as3fVPNService.class);
         intentVpn.putExtra(prefix + ".ACTION",as3fVPNService.FLAG_VPN_START);
 
@@ -409,7 +412,7 @@ public class Util {
 
     protected static void stopKi4aVPN(Context context, String prefix)
     {
-        MyLog.d(TAG, "Util.stopVPN");
+        //MyLog.d(TAG, "Util.stopVPN");
         Intent intentVpn = new Intent(context,as3fVPNService.class);
         intentVpn.putExtra(prefix + ".ACTION",as3fVPNService.FLAG_VPN_STOP);
 
@@ -442,4 +445,33 @@ public class Util {
         return key.contains("ENCRYPTED");
     }
 
+    public static String getIPAddress(boolean useIPv4) {
+        try {
+            List<NetworkInterface> interfaces = Collections.list(NetworkInterface.getNetworkInterfaces());
+            for (NetworkInterface intf : interfaces) {
+                List<InetAddress> addrs = Collections.list(intf.getInetAddresses());
+                for (InetAddress addr : addrs) {
+                    if (!addr.isLoopbackAddress()) {
+                        String sAddr = addr.getHostAddress();
+                        boolean isIPv4 = sAddr.indexOf(':')<0;
+
+                        if (useIPv4) {
+                            if (isIPv4)
+                                return sAddr;
+                        } else {
+                            if (!isIPv4) {
+                                int delim = sAddr.indexOf('%'); // drop ip6 zone suffix
+                                return delim<0 ? sAddr.toUpperCase() : sAddr.substring(0, delim).toUpperCase();
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (Exception ex) { } // for now eat exceptions
+        return "not found";
+    }
+
+    public static long getTraffic(){
+        return TrafficStats.getMobileRxBytes() + TrafficStats.getMobileTxBytes();
+    }
 }

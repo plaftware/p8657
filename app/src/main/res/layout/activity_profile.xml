@@ -25,7 +25,7 @@
         android:orientation="vertical">
 
         <TextView
-            android:text="Real User:"
+            android:text="Nombre Cliente:"
             android:textSize="18dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -51,13 +51,13 @@
 
         <TextView
             android:layout_gravity="center"
-            android:text="Expiration:"
+            android:text="Fecha de Expiración:"
             android:textSize="18dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="14dp"
             android:textColor="@android:color/holo_blue_dark"
-            android:id="@+id/textView2" />
+            android:id="@+id/expirationInfoView" />
 
         <TextView
             android:layout_marginTop="10dp"

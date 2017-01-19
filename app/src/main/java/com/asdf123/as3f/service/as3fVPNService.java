@@ -2,6 +2,7 @@ package com.asdf123.as3f.service;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.TrafficStats;
 import android.net.VpnService;
 import android.os.ParcelFileDescriptor;
 import android.preference.PreferenceManager;
@@ -30,7 +31,7 @@ public class as3fVPNService extends VpnService implements Runnable {
         int action = intent.getIntExtra(prefix + ".ACTION", 0);
 
         if(action==FLAG_VPN_START) {
-            MyLog.i(TAG, "Starting VPN tunnel");
+            //MyLog.i(TAG, "Starting VPN tunnel");
             // Stop the previous session by interrupting the thread.
             if (mThread != null) {
                 mThread.interrupt();
@@ -39,9 +40,17 @@ public class as3fVPNService extends VpnService implements Runnable {
             mThread.start();
         }
         else if(action==FLAG_VPN_STOP) {
-            MyLog.i(TAG, "Stopping VPN tunnel");
             this.onDestroy();
             stopSelf();
+            MyLog.i(TAG, "Desconectado VPN");
+            as3fService.vpn_ready = false;
+
+
+            SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+            long traffic = sharedPref.getLong("traffic", 0) + (Util.getTraffic() - sharedPref.getLong("traffic0", 0));
+            SharedPreferences.Editor editor = sharedPref.edit();
+            editor.putLong("traffic", traffic);
+            editor.commit();
         }
 
         return START_NOT_STICKY;
@@ -49,7 +58,7 @@ public class as3fVPNService extends VpnService implements Runnable {
 
     @Override
     public void onDestroy() {
-        MyLog.i(TAG, "Closing");
+        //MyLog.i(TAG, "Closing");
 
         if (mThread != null) {
             mThread.interrupt();
@@ -57,7 +66,8 @@ public class as3fVPNService extends VpnService implements Runnable {
         if (mInterface != null){
             try {
                 mInterface.close();
-            } catch (IOException e) { /* Ignore a close error here */ }
+            } catch (IOException e) { /* Ignore a close error her
+    e */ }
         }
     }
 
@@ -70,14 +80,20 @@ public class as3fVPNService extends VpnService implements Runnable {
 
     @Override
     public void run() {
-        MyLog.i(TAG, "Starting");
+        //MyLog.i(TAG, "Starting");
         if(protect_tunnel())
         {
             configure();
             as3fService.vpn_ready = true; // Notify vpn is ready now
+            MyLog.e(Util.TAG, "Conectado");
+
+            SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+            SharedPreferences.Editor editor = sharedPref.edit();
+            editor.putLong("traffic0", Util.getTraffic());
+            editor.commit();
         }
         else {
-            MyLog.i(TAG, "Failed to protect the tunnel");
+            //MyLog.i(TAG, "Failed to protect the tunnel");
             this.onDestroy();
             Util.reportDisconnection(this);
             stopSelf();
@@ -87,7 +103,7 @@ public class as3fVPNService extends VpnService implements Runnable {
     private boolean protect_tunnel()
     {
         int fd;
-        MyLog.i(TAG, "Protecting SSH fd");
+        //MyLog.i(TAG, "Protecting SSH fd");
         fd = Util.getSshfd();
         if(fd==0) return false;
         protect(fd);
@@ -96,9 +112,9 @@ public class as3fVPNService extends VpnService implements Runnable {
 
     private void configure()
     {
-        MyLog.i(TAG, "Configure");
+        //MyLog.i(TAG, "Configure");
         if (mInterface != null) {
-            MyLog.i(TAG, "Using the previous interface");
+            //MyLog.i(TAG, "Using the previous interface");
             return;
         }
 
@@ -111,7 +127,7 @@ public class as3fVPNService extends VpnService implements Runnable {
         //builder.addRoute("8.8.0.0", 16); //Redirect DNS stuff
 
         if(preferences.getBoolean("route_switch", true)) {
-            MyLog.d(Util.TAG,"Routing all traffic");
+            //MyLog.d(Util.TAG,"Routing all traffic");
             builder.addRoute("0.0.0.0", 0); //Redirect all traffic
         }
         else {
@@ -119,21 +135,21 @@ public class as3fVPNService extends VpnService implements Runnable {
             for (RouteInfo info : infoList) {
                 try {
                     if (!info.getRoute_address().isEmpty() && !info.getPrefix_length().isEmpty()) {
-                        MyLog.d(Util.TAG,"Adding route " + info.getRoute_address() + "/" + info.getPrefix_length());
+                        //MyLog.d(Util.TAG,"Adding route " + info.getRoute_address() + "/" + info.getPrefix_length());
                         builder.addRoute(info.getRoute_address(), Integer.parseInt(info.getPrefix_length())); //Redirect all traffic
                     }
                 } catch (Exception e) {
-                    MyLog.e(Util.TAG,"Fail to Add route " + info.getRoute_address() + "/" + info.getPrefix_length() + " - Skipping");
-                    MyLog.e(Util.TAG,e.getMessage());
+                    //MyLog.e(Util.TAG,"Fail to Add route " + info.getRoute_address() + "/" + info.getPrefix_length() + " - Skipping");
+                    //MyLog.e(Util.TAG,e.getMessage());
                 }
             }
             if(preferences.getBoolean("dns_switch", true)) {
                 try {
-                    MyLog.d(Util.TAG, "Adding DNS route " + preferences.getString("dns_server", "8.8.8.8") + "/32");
+                    //MyLog.d(Util.TAG, "Adding DNS route " + preferences.getString("dns_server", "8.8.8.8") + "/32");
                     builder.addRoute(preferences.getString("dns_server", "8.8.8.8"), 32); //Redirect DNS address
                 } catch (Exception e) {
-                    MyLog.e(Util.TAG,"Fail to Add DNS route " +preferences.getString("dns_server", "8.8.8.8") + "/32 - Skipping");
-                    MyLog.e(Util.TAG,e.getMessage());
+                    //MyLog.e(Util.TAG,"Fail to Add DNS route " +preferences.getString("dns_server", "8.8.8.8") + "/32 - Skipping");
+                    //MyLog.e(Util.TAG,e.getMessage());
                 }
             }
         }

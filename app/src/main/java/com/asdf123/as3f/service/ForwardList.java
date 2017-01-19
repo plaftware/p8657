@@ -68,7 +68,7 @@ public class ForwardList extends ListFragment {
             if(!info.getSrc_port().isEmpty() && !info.getDest_host().isEmpty() && !info.getDest_port().isEmpty())
                 jsonArray.put(info.getJSONObject());
         }
-        MyLog.d(Util.TAG,"ForwardJson = " + jsonArray.toString());
+        //MyLog.d(Util.TAG,"ForwardJson = " + jsonArray.toString());
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context);
         settings.edit().putString("port_forward_json",jsonArray.toString()).commit();
     }

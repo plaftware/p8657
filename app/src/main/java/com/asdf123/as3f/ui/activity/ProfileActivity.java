@@ -7,13 +7,13 @@ import android.support.v4.app.NavUtils;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.TextView;
 
 import com.asdf123.as3f.R;
 import com.asdf123.as3f.service.Util;
 import com.asdf123.as3f.service.as3fService;
 import com.asdf123.as3f.ui.activity.abs.AbstractActivity;
-import com.asdf123.as3f.utils.RTXTraffic;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -22,14 +22,14 @@ import butterknife.Bind;
 
 public class ProfileActivity extends AbstractActivity{
 
-    /*@Inject
-    RTXTraffic rtxTraffic;*/
-
     @Bind(R.id.idTextView)
     TextView idTextView;
 
     @Bind(R.id.networkReleaseText)
     TextView networkReleaseText;
+
+    @Bind(R.id.expirationInfoView)
+    TextView expirationInfoView;
 
     @Bind(R.id.consumo)
     TextView consumo;
@@ -41,18 +41,13 @@ public class ProfileActivity extends AbstractActivity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        toolbar.setTitle(R.string.app_name);
+        toolbar.setTitle(R.string.app_name_profile);
         toolbar.setTitleTextColor(getResources().getColor(R.color.colorWhite));
         this.setSupportActionBar(toolbar);
 
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
-
-        /*if(!rtxTraffic.isStaring()){
-            trafficReport(rtxTraffic.getHistoryTraffic());
-        }
-        rtxTraffic.setRtxTrafficListener(this);*/
 
         loadInfoUser();
     }
@@ -62,8 +57,11 @@ public class ProfileActivity extends AbstractActivity{
         long fechaExpiracion = sharedPref.getLong("user_fechaExpiracion", 0l);
 
         if(fechaExpiracion != 0){
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-mm-yyyy");
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy");
             networkReleaseText.setText(simpleDateFormat.format(new Date(fechaExpiracion)));
+        }else{
+            networkReleaseText.setVisibility(View.GONE);
+            expirationInfoView.setVisibility(View.GONE);
         }
 
         idTextView.setText(sharedPref.getString("user_name", ""));
@@ -73,10 +71,8 @@ public class ProfileActivity extends AbstractActivity{
 
     private long getTraffic(){
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-        if(as3fService.current_status == Util.STATUS_SOCKS){
-            return sharedPref.getLong("traffic", 0)
-                    + ((TrafficStats.getMobileRxBytes() + TrafficStats.getMobileTxBytes())
-                    - MainActivity.traffic0);
+        if(as3fService.vpn_ready){
+            return sharedPref.getLong("traffic", 0) + (Util.getTraffic() - sharedPref.getLong("traffic0", 0));
         }
         return  sharedPref.getLong("traffic", 0);
     }
@@ -84,7 +80,7 @@ public class ProfileActivity extends AbstractActivity{
 
     @Override
     protected int getLayoutResource() {
-        return R.layout.activity_datos_usuario;
+        return R.layout.activity_profile;
     }
 
     @Override

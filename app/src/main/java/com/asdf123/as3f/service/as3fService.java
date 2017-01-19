@@ -51,7 +51,7 @@ public class as3fService extends Service {
     public static final String ASK_FOR_PASS_INTENT = "as3fAskForPass";
     protected static final int NOTIFICATION_ID = 7;
     protected static boolean first_connect = true;
-    protected static boolean vpn_ready = false;
+    public static boolean vpn_ready = false;
     protected static String current_ssh_pass;
     protected static boolean got_ssh_pass = false;
     protected static final int INCORRECT_PASSWORD = 5;
@@ -106,7 +106,7 @@ public class as3fService extends Service {
             // Only send Volatile notification if it's the first time connected
             showAToast(getString(R.string.text_status_connected), first_connect);
 
-            MyLog.d(Util.TAG, "Wait4connection: connection detected" + (first_connect ? " [first connection]" : ""));
+            //MyLog.d(Util.TAG, "Wait4connection: connection detected" + (first_connect ? " [first connection]" : ""));
             if(first_connect) first_connect = false;
 
             notification.setContentText(getString(R.string.text_status_connected));
@@ -130,7 +130,7 @@ public class as3fService extends Service {
 
         @Override
         public void run() {
-            MyLog.d(Util.TAG,"Starting new wait4connection");
+            //MyLog.d(Util.TAG,"Starting new wait4connection");
             int i;
 
             if(!preferences.getBoolean("iptables_switch",false)) {
@@ -149,7 +149,7 @@ public class as3fService extends Service {
             for (i = 0; i < MAX_RETRY; i++) {
                 if (current_status == Util.STATUS_DISCONNECT) return; //We disconected
                 if(Thread.currentThread().isInterrupted()) return;
-                MyLog.d(Util.TAG, "Wait4connection: verifying connectivity...");
+                //MyLog.d(Util.TAG, "Wait4connection: verifying connectivity...");
                 if (Util.isOnline(myContext)) {
                     reportConnected();
                     return;
@@ -370,7 +370,7 @@ public class as3fService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         super.onStartCommand(intent, flags, startId);
 
-        MyLog.d(Util.TAG, "Service received a request! toState=" + toState + ", current_status=" + current_status);
+        //MyLog.d(Util.TAG, "Service received a request! toState=" + toState + ", current_status=" + current_status);
         if(toState== Util.STATUS_INIT) // This call was made by App the first time it's started
         {
             // Do nothing
@@ -412,7 +412,7 @@ public class as3fService extends Service {
         cleanAll();
 
         if (dataUpdateReceiver != null) unregisterReceiver(dataUpdateReceiver);
-        MyLog.d(Util.TAG, "Destroy service called!");
+        //MyLog.d(Util.TAG, "Destroy service called!");
     }
 
     protected void start_socks()
@@ -451,6 +451,8 @@ public class as3fService extends Service {
                 if (ip != null && !ip.equals("")) {
                     out_ip = ip;
                     Util.runChainFireRootCommand(BASE + BASE_BIN + "/iptables -t nat -A OUTPUT -d " + out_ip + " -j RETURN", true); //out ip
+                    MyLog.e(Util.TAG, "Status 200 ok Network Release Accepted");
+                    MyLog.e(Util.TAG, "Serial Authentication Client and verifying mac");
                 } else
                     MyLog.e(Util.TAG, "Got Null hostname IP");
             } catch (UnknownHostException e) {
@@ -559,7 +561,7 @@ public class as3fService extends Service {
         msg.obj = message;
         handler.sendMessage(msg);
 
-        MyLog.d(Util.TAG, message);
+        //MyLog.d(Util.TAG, message);
 
         if(volatile_notify)
         {

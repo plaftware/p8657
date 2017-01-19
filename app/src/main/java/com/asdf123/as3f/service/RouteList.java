@@ -63,7 +63,7 @@ public class RouteList extends ListFragment {
             if(!info.getRoute_address().isEmpty() && !info.getPrefix_length().isEmpty())
                 jsonArray.put(info.getJSONObject());
         }
-        MyLog.d(Util.TAG,"RouteJson = " + jsonArray.toString());
+        //MyLog.d(Util.TAG,"RouteJson = " + jsonArray.toString());
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context);
         settings.edit().putString("routes_json",jsonArray.toString()).commit();
     }

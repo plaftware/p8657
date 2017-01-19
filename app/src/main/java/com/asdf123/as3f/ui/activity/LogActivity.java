@@ -37,7 +37,7 @@ public class LogActivity extends AbstractActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         activity = this;
-        toolbar.setTitle(R.string.app_name);
+        toolbar.setTitle(R.string.app_name_log);
         toolbar.setTitleTextColor(getResources().getColor(R.color.colorWhite));
         this.setSupportActionBar(toolbar);
 
@@ -47,10 +47,6 @@ public class LogActivity extends AbstractActivity {
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
-
-
-
-
     }
 
     @Override
@@ -60,17 +56,12 @@ public class LogActivity extends AbstractActivity {
 
 
     public void listarlog(LinkedList<String> log){
-
         if (!log.isEmpty()){
             Log.d("Quantity", "Number "+log.size());
             ArrayAdapter<String> adapter = new ArrayAdapter<String>(activity,
                     android.R.layout.simple_list_item_1, android.R.id.text1, log.toArray(new String[0]));
-
             list.setAdapter(adapter);
-
         }
-
-
     }
 
 }
