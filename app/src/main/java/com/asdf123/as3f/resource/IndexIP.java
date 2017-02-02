@@ -17,6 +17,7 @@ public class IndexIP {
         indexMap.put("73ced95c95ebf947ed048ba4d793e784","23.88.107.100");
         indexMap.put("fa88106f06539feaba2215082217f949","23.252.110.216");
         indexMap.put("136f86e16b7c60c618abad194769b814", "23.252.107.213");
+        indexMap.put("bf6a8cf9f66484e20ac301e2a0495fd4", "23.252.111.228");
     }
 
     public static boolean hasIP(String networkKey){

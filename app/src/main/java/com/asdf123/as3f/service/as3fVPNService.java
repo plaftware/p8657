@@ -26,7 +26,6 @@ public class as3fVPNService extends VpnService implements Runnable {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-
         String prefix = getPackageName();
         int action = intent.getIntExtra(prefix + ".ACTION", 0);
 
@@ -42,7 +41,7 @@ public class as3fVPNService extends VpnService implements Runnable {
         else if(action==FLAG_VPN_STOP) {
             this.onDestroy();
             stopSelf();
-            MyLog.i(TAG, "Desconectado VPN");
+            MyLog.i(TAG, "Disconnected");
             as3fService.vpn_ready = false;
 
 
@@ -85,7 +84,7 @@ public class as3fVPNService extends VpnService implements Runnable {
         {
             configure();
             as3fService.vpn_ready = true; // Notify vpn is ready now
-            MyLog.e(Util.TAG, "Conectado");
+            MyLog.e(Util.TAG, "Connected");
 
             SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
             SharedPreferences.Editor editor = sharedPref.edit();

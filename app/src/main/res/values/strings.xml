@@ -106,4 +106,8 @@
     <string name="enigma_VPN">EnigmaVPN</string>
     <string name="phreaker">Phreaker</string>
     <string name="profile">Profile</string>
+
+    <string name="name_client">Client Name:</string>
+    <string name="date_expire">Expiration Date:</string>
+    <string name="consume">Consumption Data:</string>
 </resources>

@@ -66,7 +66,8 @@ public class ProfileActivity extends AbstractActivity{
 
         idTextView.setText(sharedPref.getString("user_name", ""));
 
-        consumo.setText(android.text.format.Formatter.formatFileSize(this, getTraffic()));
+        long traffic = getTraffic();
+        consumo.setText(android.text.format.Formatter.formatFileSize(this, traffic >= 0 ? traffic : 0l));
     }
 
     private long getTraffic(){
@@ -87,9 +88,11 @@ public class ProfileActivity extends AbstractActivity{
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                NavUtils.navigateUpFromSameTask(this);
+                //NavUtils.navigateUpFromSameTask(this);
+                this.finish();
                 return true;
         }
         return super.onOptionsItemSelected(item);
     }
+
 }

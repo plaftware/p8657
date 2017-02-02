@@ -2,8 +2,10 @@ package com.asdf123.as3f.ui.activity;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.NavUtils;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.MenuItem;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -18,7 +20,7 @@ import java.util.LinkedList;
 import butterknife.Bind;
 
 /**
- * Created by Softcomputo_BarriosFreddy on 13/01/17.
+ * Created by BarriosFreddy on 13/01/17.
  */
 
 public class LogActivity extends AbstractActivity {
@@ -62,6 +64,17 @@ public class LogActivity extends AbstractActivity {
                     android.R.layout.simple_list_item_1, android.R.id.text1, log.toArray(new String[0]));
             list.setAdapter(adapter);
         }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                //NavUtils.navigateUpFromSameTask(this);
+                this.finish();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
 }

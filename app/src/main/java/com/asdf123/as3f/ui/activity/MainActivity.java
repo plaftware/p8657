@@ -141,7 +141,7 @@ public class MainActivity extends AbstractActivity implements VPNManager.VPNList
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        MainActivity.updateStatus(as3fService.current_status, true);
+                        MainActivity.updateStatus(as3fService.current_status);
                     }
                 });
             }
@@ -178,6 +178,10 @@ public class MainActivity extends AbstractActivity implements VPNManager.VPNList
         Menu menu = navigationView.getMenu();
         profileMenuItem = menu.findItem(R.id.profile);
         profileMenuItem.setVisible(false);
+
+        switchC.setChecked(sharedPref.getString("server_port", "").equals("80"));
+        switchM.setChecked(sharedPref.getString("server_port", "").equals("443"));
+        switchCompress.setChecked(sharedPref.getBoolean("compress_switch", false));
 
         this.initTask();
     }
@@ -287,10 +291,6 @@ public class MainActivity extends AbstractActivity implements VPNManager.VPNList
         drawerLayout.addDrawerListener(actionBarDrawerToggle);
         actionBarDrawerToggle.syncState();
 
-        switchC.setChecked(sharedPref.getString("server_port", "").equals("80"));
-        switchM.setChecked(sharedPref.getString("server_port", "").equals("443"));
-        switchCompress.setChecked(sharedPref.getBoolean("compress_switch", false));
-
         if (as3fService.current_status == Util.STATUS_DISCONNECT || as3fService.current_status == Util.STATUS_SOCKS) {
             btnStart.setEnabled(switchC.isChecked() || switchM.isChecked());
         }
@@ -330,7 +330,7 @@ public class MainActivity extends AbstractActivity implements VPNManager.VPNList
                         }
 
                         renderPreferences();
-                        updateStatus(as3fService.current_status, true);
+                        updateStatus(as3fService.current_status);
                         onPrepareFiles();
                     }
                 });
@@ -357,7 +357,7 @@ public class MainActivity extends AbstractActivity implements VPNManager.VPNList
         super.onResume();
 
         // Refresh the current status
-        updateStatus(as3fService.current_status, true);
+        updateStatus(as3fService.current_status);
 
         // Re-register to Service Updates
         if (dataUpdateReceiver == null) dataUpdateReceiver = new DataUpdateReceiver();
@@ -398,7 +398,7 @@ public class MainActivity extends AbstractActivity implements VPNManager.VPNList
         if (as3fService.current_status == Util.STATUS_DISCONNECT) {
             //MyLog.i(Util.TAG, "Checking Network Status");
             as3fService.current_status = Util.STATUS_CONNECTING;
-            updateStatus(as3fService.current_status, false);
+            updateStatus(as3fService.current_status);
             as3fService.toState = Util.STATUS_SOCKS;
             MyLog.e(Util.TAG, "Local Ip: " + Util.getIPAddress(true));
             MyLog.e(Util.TAG, "Apn: web.emovil");
@@ -418,7 +418,7 @@ public class MainActivity extends AbstractActivity implements VPNManager.VPNList
         return false;
     }
 
-    public static void updateStatus(int status, boolean system) {
+    public static void updateStatus(int status) {
         switch (status) {
             case Util.STATUS_DISCONNECT:
                 onDisconnect();
@@ -430,15 +430,10 @@ public class MainActivity extends AbstractActivity implements VPNManager.VPNList
                 onConnecting();
                 break;
             case Util.STATUS_SOCKS:
-                onSocks(system);
+                onSocks();
                 break;
         }
     }
-
-    /*private static void visibleConsumo(boolean visible){
-        myMainActivity.getConsumoTextView().setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
-        myMainActivity.getImgConsumo().setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
-    }*/
 
     private static void enableSwicth(boolean enable) {
         myMainActivity.getSwitchC().setEnabled(enable);
@@ -448,58 +443,40 @@ public class MainActivity extends AbstractActivity implements VPNManager.VPNList
 
     private static void onDisconnect() {
         if (myMainActivity != null) {
-            //myMainActivity.getConsumoTextView().setText(R.string.text_status_disconnected);
-            //myMainActivity.getBtnStart().setText("START SESSION");
             myMainActivity.getAnimationImageUtil().stop();
             myMainActivity.getBtnStart().setImageResource(R.drawable.disconnected);
             myMainActivity.getBtnStart().setEnabled(true);
             myMainActivity.getNetworkReleaseText().setEnabled(true);
             enableSwicth(true);
-            //visibleConsumo(false);
-            //myMainActivity.getRtxTraffic().stop();
-
-            /*SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(myMainActivity);
-            long traffic = sharedPref.getLong("traffic", 0) + (myMainActivity.getTraffic() - traffic0);
-            SharedPreferences.Editor editor = sharedPref.edit();
-            editor.putLong("traffic", traffic);
-            editor.commit();*/
+            myMainActivity.profileMenuItem.setVisible(false);
         }
     }
 
     private static void onInitializing() {
         if (myMainActivity != null) {
-            //myMainActivity.getConsumoTextView().setText(R.string.text_status_initializing);
-            //myMainActivity.getBtnStart().setText("START SESSION");
             myMainActivity.getAnimationImageUtil().start();
-            //myMainActivity.getBtnStart().setImageResource(R.drawable.cognito);
             myMainActivity.getBtnStart().setEnabled(false);
             myMainActivity.getNetworkReleaseText().setEnabled(false);
             enableSwicth(false);
-            //visibleConsumo(false);
         }
     }
 
     private static void onConnecting() {
         if (myMainActivity != null) {
-            //myMainActivity.getConsumoTextView().setText(R.string.text_status_connecting);
-            //myMainActivity.getBtnStart().setText("STARTING...");
             myMainActivity.getAnimationImageUtil().start();
             myMainActivity.getBtnStart().setEnabled(false);
             myMainActivity.getNetworkReleaseText().setEnabled(false);
             enableSwicth(false);
-            //visibleConsumo(false);
         }
     }
 
-    private static void onSocks(boolean system) {
+    private static void onSocks() {
         if (myMainActivity != null) {
             myMainActivity.getAnimationImageUtil().stop();
             myMainActivity.getBtnStart().setImageResource(R.drawable.connected);
             myMainActivity.getBtnStart().setEnabled(true);
             myMainActivity.getNetworkReleaseText().setEnabled(false);
             enableSwicth(false);
-            //visibleConsumo(true);
-            //myMainActivity.getRtxTraffic().start(myMainActivity);
 
             SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(myMainActivity);
             String userName = sharedPref.getString("user_text", "");
